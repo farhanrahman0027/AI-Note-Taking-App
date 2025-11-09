@@ -1,24 +1,32 @@
-import { MongoClient } from "mongodb"
+import { MongoClient } from "mongodb";
 
-let client: MongoClient
-let db: any
+const uri = process.env.MONGODB_URI as string;
+const options = {};
 
-export async function connectToDatabase() {
-  if (db) return db
+let client: MongoClient;
+let clientPromise: Promise<MongoClient>;
 
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI environment variable is required")
-  }
-
-  client = new MongoClient(process.env.MONGODB_URI)
-  await client.connect()
-  db = client.db("ai-notes")
-  return db
+if (!uri) {
+  throw new Error("❌ Please add your MONGODB_URI to environment variables.");
 }
 
-export async function getDatabase() {
-  if (!db) {
-    await connectToDatabase()
+// In production (like Vercel), use a global variable to prevent multiple connections
+if (process.env.NODE_ENV === "development") {
+  // @ts-ignore
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    // @ts-ignore
+    global._mongoClientPromise = client.connect();
   }
-  return db
+  // @ts-ignore
+  clientPromise = global._mongoClientPromise;
+} else {
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
+
+export async function connectToDatabase() {
+  const client = await clientPromise;
+  const db = client.db("ai-notes");
+  return { client, db };
 }

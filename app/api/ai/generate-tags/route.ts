@@ -1,37 +1,45 @@
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth-options"
-import { generateText } from "ai"
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
-
-    const { title, content } = await request.json()
+    const { content } = await request.json();
 
     if (!content) {
-      return NextResponse.json({ error: "Content is required" }, { status: 400 })
+      return NextResponse.json({ error: "Content is required" }, { status: 400 });
     }
 
-    const { text } = await generateText({
-      model: "openai/gpt-4-mini",
-      prompt: `Given the following note, generate 3-5 relevant tags. Return only the tags as a comma-separated list, nothing else.\n\nTitle: ${title}\n\nContent: ${content}`,
-      temperature: 0.5,
-      maxTokens: 100,
-    })
+    const response = await fetch(
+      "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: `Extract 5 short, relevant tags or keywords from the following note. Return them as a comma-separated list:\n\n${content}`,
+        }),
+      }
+    );
 
+    const result = await response.json();
+
+    if (result.error) throw new Error(result.error);
+
+    // The model returns [{ summary_text: "keyword1, keyword2, ..." }]
+    const text = result[0]?.summary_text || "";
     const tags = text
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter((tag) => tag.length > 0)
+      .split(/[,\n]/)
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean)
+      .slice(0, 5);
 
-    return NextResponse.json({ tags })
-  } catch (error) {
-    console.error("Generate tags error:", error)
-    return NextResponse.json({ error: "Failed to generate tags" }, { status: 500 })
+    return NextResponse.json({ tags });
+  } catch (error: any) {
+    console.error("Auto Tags error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to generate tags" },
+      { status: 500 }
+    );
   }
 }

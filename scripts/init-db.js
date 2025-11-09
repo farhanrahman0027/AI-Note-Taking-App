@@ -7,34 +7,34 @@ async function initializeDatabase() {
   const client = new MongoClient(MONGODB_URI)
 
   try {
-    console.log("[v0] Connecting to MongoDB...")
+    console.log("Connecting to MongoDB...")
     await client.connect()
     const db = client.db(DB_NAME)
 
-    console.log("[v0] Creating collections...")
+    console.log("Creating collections...")
 
     // Create users collection with indexes
     await db.createCollection("users").catch(() => {
-      console.log("[v0] Users collection already exists")
+      console.log("Users collection already exists")
     })
     await db.collection("users").createIndex({ email: 1 }, { unique: true })
 
     // Create notes collection
     await db.createCollection("notes").catch(() => {
-      console.log("[v0] Notes collection already exists")
+      console.log("Notes collection already exists")
     })
     await db.collection("notes").createIndex({ userId: 1, createdAt: -1 })
     await db.collection("notes").createIndex({ userId: 1, isPinned: -1 })
 
     // Create tags collection
     await db.createCollection("tags").catch(() => {
-      console.log("[v0] Tags collection already exists")
+      console.log("Tags collection already exists")
     })
     await db.collection("tags").createIndex({ name: 1, userId: 1 }, { unique: true })
 
-    console.log("[v0] Database initialized successfully!")
+    console.log("Database initialized successfully!")
   } catch (error) {
-    console.error("[v0] Database initialization failed:", error)
+    console.error("Database initialization failed:", error)
   } finally {
     await client.close()
   }

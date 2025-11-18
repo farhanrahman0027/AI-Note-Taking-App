@@ -4,6 +4,7 @@ import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { ThemeToggle } from "./theme-toggle"
 
 export function Navbar() {
   const { data: session } = useSession()
@@ -19,7 +20,8 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <span className="text-sm text-muted-foreground truncate max-w-[160px]">{session?.user?.name}</span>
+          <ThemeToggle />
+          <span className="text-sm text-muted-foreground truncate max-w-40">{session?.user?.name}</span>
           <Button onClick={() => signOut()} variant="outline" size="sm">
             Sign Out
           </Button>
@@ -44,6 +46,7 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border bg-card px-4 py-3">
           <div className="flex flex-col gap-2">
+            <ThemeToggle />
             <span className="text-sm text-muted-foreground">{session?.user?.name}</span>
             <Button onClick={() => signOut()} variant="outline" size="sm">
               Sign Out

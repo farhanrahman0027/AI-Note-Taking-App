@@ -137,3 +137,33 @@
     @apply text-base sm:text-lg;
   }
 }
+
+/* Accent theme presets */
+.accent-blue {
+  --primary: #2563eb; /* blue-600 */
+  --primary-foreground: #ffffff;
+  --accent: #2563eb;
+  --accent-foreground: #ffffff;
+}
+
+.accent-purple {
+  --primary: #7c3aed; /* purple-600 */
+  --primary-foreground: #ffffff;
+  --accent: #7c3aed;
+  --accent-foreground: #ffffff;
+}
+
+.accent-teal {
+  --primary: #0d9488; /* teal-600 */
+  --primary-foreground: #ffffff;
+  --accent: #0d9488;
+  --accent-foreground: #ffffff;
+}
+
+/* Smooth theme / accent transitions. Honours reduced motion preference */
+@media (prefers-reduced-motion: no-preference) {
+  .theme-transition,
+  .theme-transition * {
+    transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  }
+}

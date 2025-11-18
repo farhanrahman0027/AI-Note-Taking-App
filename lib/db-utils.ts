@@ -79,3 +79,22 @@ export async function getUserTags(userId: string) {
     .sort({ count: -1 })
     .toArray()
 }
+
+export async function getUserAccent(userId: string) {
+  const { db } = await connectToDatabase()
+
+  const user = await db.collection("users").findOne({ _id: new ObjectId(userId) })
+  return (user && (user.accent as string)) || null
+}
+
+export async function setUserAccent(userId: string, accent: string) {
+  const { db } = await connectToDatabase()
+
+  const result = await db.collection("users").findOneAndUpdate(
+    { _id: new ObjectId(userId) },
+    { $set: { accent, updatedAt: new Date() } },
+    { returnDocument: "after" }
+  )
+
+  return result?.value ?? null
+}

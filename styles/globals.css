@@ -123,3 +123,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* App container helper for consistent responsive padding */
+@layer components {
+  .app-container {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-[1200px];
+  }
+}
+
+/* Responsive typography tweaks */
+@layer utilities {
+  .lead-text {
+    @apply text-base sm:text-lg;
+  }
+}

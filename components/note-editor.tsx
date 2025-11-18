@@ -56,8 +56,8 @@ export function NoteEditor({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-4xl max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 sm:p-6">
+      <Card className="w-full max-w-full sm:max-w-2xl md:max-w-4xl max-h-[95vh] sm:rounded-lg flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-xl font-bold text-foreground">Edit Note</h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
@@ -66,7 +66,7 @@ export function NoteEditor({
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4 sm:p-6">
             {/* Editor Section */}
             <div className="lg:col-span-2 space-y-4">
               <div>
@@ -100,7 +100,7 @@ export function NoteEditor({
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Write your note here..."
-                  className="mt-2 min-h-64"
+                  className="mt-2 min-h-[18rem] sm:min-h-[20rem]"
                 />
               </div>
 
@@ -144,7 +144,7 @@ export function NoteEditor({
             </div>
 
             {/* Enhancements Sidebar */}
-            <div>
+            <div className="md:col-span-1">
               {showEnhancements ? (
                 <NoteEnhancements
                   title={title}

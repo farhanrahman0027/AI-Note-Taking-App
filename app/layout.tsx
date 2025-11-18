@@ -20,7 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans antialiased">
         {/* ✅ Wrap all client-side context here */}
         <Providers>
-          {children}
+          <div className="min-h-screen flex flex-col bg-background">
+            <main className="w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-[1200px]">{children}</main>
+          </div>
         </Providers>
         <Analytics />
       </body>

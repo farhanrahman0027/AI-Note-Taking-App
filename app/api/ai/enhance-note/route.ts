@@ -6,7 +6,8 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     const tagsText = tagsData[0]?.summary_text || "";
     const tags = tagsText
       .split(/[,\n]/)
-      .map((t) => t.trim().toLowerCase())
+      .map((t: string) => t.trim().toLowerCase())
       .filter(Boolean)
       .slice(0, 5);
 
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     const takeawaysText = takeawaysData[0]?.summary_text || "";
     const takeaways = takeawaysText
       .split(/[\.\n]/)
-      .map((t) => t.trim())
+      .map((t: string) => t.trim())
       .filter(Boolean)
       .slice(0, 3);
 
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
     const suggestionsText = suggestionsData[0]?.summary_text || "";
     const suggestions = suggestionsText
       .split(/[\.\n]/)
-      .map((t) => t.trim())
+      .map((t: string) => t.trim())
       .filter(Boolean)
       .slice(0, 3);
 

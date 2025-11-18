@@ -7,11 +7,12 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const notes = await getNotesByUser(session.user.id)
+    const notes = await getNotesByUser(userId)
 
     return NextResponse.json(notes)
   } catch (error) {
@@ -24,7 +25,8 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Title and content are required" }, { status: 400 })
     }
 
-    const noteId = await createNote(session.user.id, {
+    const noteId = await createNote(userId, {
       title,
       content,
       tags: Array.isArray(tags) ? tags : [],

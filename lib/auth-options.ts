@@ -16,7 +16,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email and password required")
         }
 
-        const db = await connectToDatabase()
+        const { db } = await connectToDatabase()
         const user = await db.collection("users").findOne({ email: credentials.email })
 
         if (!user) {
@@ -40,20 +40,19 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id
+        ;(token as any).id = (user as any).id
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string
+        ;(session.user as any).id = token?.id as string
       }
       return session
     },
   },
   pages: {
     signIn: "/auth/sign-in",
-    signUp: "/auth/sign-up",
   },
   session: {
     strategy: "jwt",

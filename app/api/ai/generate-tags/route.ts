@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const text = result[0]?.summary_text || "";
     const tags = text
       .split(/[,\n]/)
-      .map((t) => t.trim().toLowerCase())
+      .map((t: string) => t.trim().toLowerCase())
       .filter(Boolean)
       .slice(0, 5);
 

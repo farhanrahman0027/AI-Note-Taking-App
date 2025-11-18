@@ -7,12 +7,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { id } = await params
-    const note = await getNoteById(id, session.user.id)
+    const note = await getNoteById(id, userId)
 
     if (!note) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 })
@@ -29,14 +30,15 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { id } = await params
     const updates = await request.json()
 
-    const updatedNote = await updateNote(id, session.user.id, updates)
+    const updatedNote = await updateNote(id, userId, updates)
 
     if (!updatedNote) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 })
@@ -53,12 +55,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id
+    if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const { id } = await params
-    const deletedCount = await deleteNote(id, session.user.id)
+    const deletedCount = await deleteNote(id, userId)
 
     if (deletedCount === 0) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 })

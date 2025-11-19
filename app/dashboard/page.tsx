@@ -143,8 +143,8 @@ export default function Dashboard() {
       <Navbar />
 
       <div className="app-container py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex-1 flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-2 max-w-md">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-8">
+          <div className="flex-1 flex items-center gap-2 bg-card border border-border rounded-lg px-3 py-2 w-full sm:max-w-md">
             <Search size={20} className="text-muted-foreground" />
             <Input
               placeholder="Search notes..."
@@ -153,7 +153,7 @@ export default function Dashboard() {
               className="border-0 p-0"
             />
           </div>
-          <Button onClick={handleCreateNote} size="lg" className="gap-2">
+          <Button onClick={handleCreateNote} size="lg" className="gap-2 w-full sm:w-auto">
             <Plus size={20} />
             New Note
           </Button>

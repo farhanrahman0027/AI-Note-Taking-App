@@ -12,7 +12,7 @@ const ACCENTS = [
   { id: "teal", label: "Teal", className: "accent-teal" },
 ]
 
-export function ThemeToggle() {
+export function ThemeToggle({ showAccents = true }: { showAccents?: boolean }) {
   const { theme, setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [accent, setAccent] = useState<string>("blue")
@@ -72,39 +72,57 @@ export function ThemeToggle() {
       <button
         aria-label="Toggle theme"
         className={cn("p-2 rounded hover:bg-secondary/10")}
-        onClick={() => withTransition(() => setTheme(resolvedTheme === "dark" ? "light" : "dark"))}
+        onClick={() => {
+          const newTheme = resolvedTheme === "dark" ? "light" : "dark"
+          withTransition(() => {
+            setTheme(newTheme)
+            try {
+              const root = document.documentElement
+              if (newTheme === "dark") {
+                root.classList.add("dark")
+              } else {
+                root.classList.remove("dark")
+              }
+              localStorage.setItem("theme", newTheme)
+            } catch (e) {
+              // ignore
+            }
+          })
+        }}
       >
         {resolvedTheme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
       </button>
 
-      <div className="flex items-center gap-2">
-        {ACCENTS.map((a) => (
-          <button
-            key={a.id}
-            aria-label={`Accent ${a.label}`}
-            onClick={() => {
-              setAccent(a.id)
-              withTransition(() => applyAccent(a.id))
-              // persist to server if logged in
-              if (session?.user) {
-                fetch("/api/user/accent", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ accent: a.id }),
-                }).catch(() => {})
-              }
-            }}
-            className={cn(
-              "w-6 h-6 rounded-full border border-border",
-              accent === a.id ? "ring-2 ring-offset-1 ring-primary" : ""
-            )}
-            style={{
-              background:
-                a.id === "blue" ? "#2563eb" : a.id === "purple" ? "#7c3aed" : "#0d9488",
-            }}
-          />
-        ))}
-      </div>
+      {showAccents && (
+        <div className="flex items-center gap-2">
+          {ACCENTS.map((a) => (
+            <button
+              key={a.id}
+              aria-label={`Accent ${a.label}`}
+              onClick={() => {
+                setAccent(a.id)
+                withTransition(() => applyAccent(a.id))
+                // persist to server if logged in
+                if (session?.user) {
+                  fetch("/api/user/accent", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ accent: a.id }),
+                  }).catch(() => {})
+                }
+              }}
+              className={cn(
+                "w-6 h-6 rounded-full border border-border",
+                accent === a.id ? "ring-2 ring-offset-1 ring-primary" : ""
+              )}
+              style={{
+                background:
+                  a.id === "blue" ? "#2563eb" : a.id === "purple" ? "#7c3aed" : "#0d9488",
+              }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

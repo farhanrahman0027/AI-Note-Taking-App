@@ -12,7 +12,7 @@ export function Navbar() {
 
   return (
     <nav className="border-b border-border bg-card">
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 max-w-[1200px] mx-auto">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 max-w-7xl mx-auto">
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="font-bold text-lg text-foreground">
             AI Notes
@@ -20,11 +20,12 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
-          <ThemeToggle />
+          
           <span className="text-sm text-muted-foreground truncate max-w-40">{session?.user?.name}</span>
           <Button onClick={() => signOut()} variant="outline" size="sm">
             Sign Out
           </Button>
+          <ThemeToggle showAccents={false} />
         </div>
 
         {/* Mobile menu button */}
@@ -46,7 +47,7 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border bg-card px-4 py-3">
           <div className="flex flex-col gap-2">
-            <ThemeToggle />
+            <ThemeToggle showAccents={false} />
             <span className="text-sm text-muted-foreground">{session?.user?.name}</span>
             <Button onClick={() => signOut()} variant="outline" size="sm">
               Sign Out

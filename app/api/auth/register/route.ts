@@ -1,4 +1,5 @@
-import clientPromise from "@/lib/mongodb";
+import { connectToDatabase } from "@/lib/mongodb";
+import { validateEnv } from "@/lib/env";
 import bcrypt from "bcryptjs";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -13,9 +14,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ✅ Get database connection
-    const client = await clientPromise;
-    const db = client.db("ai-notes");
+    // validate environment vars and provide clear server logs if something is missing
+    validateEnv()
+
+    // ✅ Get database connection (use configured DB via MONGODB_DB or the DB in the connection string)
+    const { db } = await connectToDatabase();
 
     // Check if user already exists
     const existingUser = await db.collection("users").findOne({ email });

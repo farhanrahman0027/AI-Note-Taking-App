@@ -59,3 +59,10 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
 }
+
+// Warn if NEXTAUTH_SECRET is not set — NextAuth requires a secret in production.
+if (!process.env.NEXTAUTH_SECRET) {
+  console.warn(
+    "[auth-options] WARNING: NEXTAUTH_SECRET is not set. Set a strong NEXTAUTH_SECRET in Vercel environment variables for production authentication security."
+  )
+}

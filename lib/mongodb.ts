@@ -30,7 +30,8 @@ if (process.env.NODE_ENV === "development") {
 // ✅ Named export for your authOptions import
 export async function connectToDatabase() {
   const client = await clientPromise
-  const db = client.db() // default DB from connection string
+  const dbName = process.env.MONGODB_DB
+  const db = dbName ? client.db(dbName) : client.db() // use configured DB name or fallback to default in URI
   return { client, db }
 }
 

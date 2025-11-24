@@ -2,7 +2,14 @@
 import { MongoClient } from "mongodb"
 
 const uri = process.env.MONGODB_URI as string
-const options = {}
+// Allow an escape hatch for development debugging of TLS issues. DO NOT enable in production.
+const tlsAllowInvalid = process.env.MONGODB_TLS_ALLOW_INVALID === "true"
+const options: any = {}
+if (tlsAllowInvalid) {
+  options.tls = true
+  options.tlsAllowInvalidCertificates = true
+  options.tlsAllowInvalidHostnames = true
+}
 
 if (!uri) {
   throw new Error("Please add your Mongo URI to .env.local")
@@ -29,10 +36,28 @@ if (process.env.NODE_ENV === "development") {
 
 // ✅ Named export for your authOptions import
 export async function connectToDatabase() {
-  const client = await clientPromise
-  const dbName = process.env.MONGODB_DB
-  const db = dbName ? client.db(dbName) : client.db() // use configured DB name or fallback to default in URI
-  return { client, db }
+  try {
+    const client = await clientPromise
+    const dbName = process.env.MONGODB_DB
+    const db = dbName ? client.db(dbName) : client.db() // use configured DB name or fallback to default in URI
+    return { client, db }
+  } catch (err) {
+    // Provide a clearer log message to help diagnose TLS / connection problems (hide full URI credentials)
+    try {
+      const displayHost = (() => {
+        if (!process.env.MONGODB_URI) return "(no MONGODB_URI)"
+        // attempt to display hostname:port without credentials
+        const uriStr = process.env.MONGODB_URI
+        const atIndex = uriStr.indexOf("@")
+        if (atIndex !== -1) return uriStr.slice(atIndex + 1)
+        return uriStr
+      })()
+      console.error(`[mongodb] Failed to connect to ${displayHost}:`, err)
+    } catch (e) {
+      console.error("[mongodb] Failed to connect (and failed to redact URI):", err)
+    }
+    throw err
+  }
 }
 
 // ✅ Default export (optional for flexibility)

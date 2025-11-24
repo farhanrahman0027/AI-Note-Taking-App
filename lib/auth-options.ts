@@ -13,20 +13,20 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password required")
+          return null
         }
 
         const { db } = await connectToDatabase()
         const user = await db.collection("users").findOne({ email: credentials.email })
 
         if (!user) {
-          throw new Error("User not found")
+          return null
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
-          throw new Error("Invalid password")
+          return null
         }
 
         return {

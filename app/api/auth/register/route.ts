@@ -39,10 +39,11 @@ export async function POST(request: NextRequest) {
       createdAt: new Date(),
     });
 
+    // insertedId is a MongoDB ObjectId; convert to string for JSON serialization
     return NextResponse.json(
       {
         message: "User registered successfully",
-        userId: result.insertedId,
+        userId: result.insertedId?.toString?.() ?? null,
       },
       { status: 201 }
     );
